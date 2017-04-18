@@ -50,7 +50,8 @@ class DataManager(object):
         seriesuid = self.candidates[1][0]
         item['seriesuid'] = seriesuid
         item['fpath'] = self.filedict[seriesuid]
-        item['candidates'] = list()
+        item['candidates_pos'] = list()
+        item['candidates_neg'] = list()
         # for each candidate
         for i in xrange(1, len(self.candidates)):
             cand = self.candidates[i]
@@ -62,13 +63,19 @@ class DataManager(object):
                 seriesuid = cand[0]
                 item['seriesuid'] = seriesuid
                 item['fpath'] = self.filedict[seriesuid]
-                item['candidates'] = list()
+                item['candidates_pos'] = list()
+                item['candidates_neg'] = list()
             # append candicate ['coordX', 'coordY', 'coordZ', 'class'] to current item's candidates list
             # item['candidates'].append(cand[1:])
             # append candicate ['coordZ', 'coordY', 'coordX', 'class'] to current item's candidates list
-            item['candidates'].append([cand[3], cand[2], cand[1], cand[4]])
-        self.imdb.append(item)
-        self.imdb.append(item)
+            candidates_coord = [cand[3], cand[2], cand[1]]
+            if int(cand[4]) > 0:
+                item['candidates_pos'].append(candidates_coord)
+            else:
+                item['candidates_neg'].append(candidates_coord)
+            # save last item
+            if i == (len(self.candidates)-1):
+                self.imdb.append(item)
 
     def loadTrainingData(self):
         self.load_candidates()
@@ -77,20 +84,34 @@ class DataManager(object):
 
         self.trainingdb = list()
         validation_set = 'subset9'
-        print len(self.imdb)
+        # print len(self.imdb)
         for item in self.imdb:
             if validation_set in item['fpath']:
+                continue
+            elif len(item['candidates_pos']) == 0:
                 continue
             else:
                 self.trainingdb.append(item)
 
-        print len(self.trainingdb)
+        # print len(self.trainingdb)
 
 
-# srcFolder = "/home/zlp/dev/lungnodule/data/lungnodule"
-# d = DataManager(srcFolder,srcFolder,srcFolder)
-# d.loadTrainingData()
 
-a = ['56.08','67.85','311.92','0.5']
-b = np.array(a, np.float)
-print np.round(b).astype(np.int)
+# a = list()
+# b = np.array([1,2,3])
+# a.append(b)
+# b = np.array([11,22,33])
+# a.append(b)
+# b = np.array([111,222,333])
+# a.append(b)
+# b = np.array([1111,2222,3333])
+# a.append(b)
+# b = np.array([1111,2222,3333])
+# a.append(b)
+
+# print a
+# c = np.array(a)
+# print c
+
+# print len(c)
+# print c[0:3]

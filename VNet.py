@@ -11,6 +11,10 @@ import util
 from os.path import splitext
 from multiprocessing import Process, Queue
 
+import scipy
+from scipy import ndimage
+import math
+
 class VNet(object):
     params=None
     dataManagerTrain=None
@@ -25,43 +29,122 @@ class VNet(object):
 
         nr_iter = self.params['ModelParams']['numIterations']
         batchsize = self.params['ModelParams']['batchsize']
+        pos_neg_ratio = 1.0
 
-        nr_iter_dataAug = nr_iter*batchsize
+        # nr_iter_dataAug = nr_iter*batchsize
+        nr_iter_dataAug = nr_iter
         np.random.seed()
         whichDataList = np.random.randint(len(self.dataManagerTrain.trainingdb), size=int(nr_iter_dataAug/self.params['ModelParams']['nProc']))
-
-        for i in xrange(len(whichDataList)):
-            # get item infos
-            item = self.dataManagerTrain.trainingdb[i]
+        for data_index in whichDataList:
+            print data_index
+            """ Get Item Infos
+            """
+            item = self.dataManagerTrain.trainingdb[data_index]
             fpath = item["fpath"]
-            candidates = item['candidates']
-            candidates = np.array(candidates, np.float)
-            # load image infos, While in numpy, an array is indexed in the opposite order (z,y,x)
+            candidates_pos = np.array(item['candidates_pos'], np.float)
+            candidates_neg = np.array(item['candidates_neg'], np.float)
+            """ Load image infos, While in numpy, an array is indexed in the opposite order (z,y,x)
+            """
             img, origin, spacing = util.load_itk_image(fpath)
-            print img.shape
-            # apply hu
-            img = util.normalizePlanes(img)
-            
-            # transform candidates from world to voxel coorid
-            candidates_pos = candidates[candidates[:,3] > 0][:,0:3]
-            candidates_neg = candidates[candidates[:,3] == 0][:,0:3]
+            img = img.astype(np.float32, copy=False)
+            """ Apply Hounsfield Unit Window  
+            The Hounsfield unit values will be windowed in the range
+            HU_WINDOW to exclude irrelevant organs and objects.
+            """
+            HU_WINDOW = [-1000., 400.]
+            img = util.hounsfield_unit_window(img, HU_WINDOW)
+            """ Map src_range value to dst_range value
+            """
+            img = util.normalizer(img, src_range=HU_WINDOW, dst_range=[0., 1.])
+            """ Transform candidates from world coordinates to voxel coordinates
+            voxel coordinates candicate ['coordZ', 'coordY', 'coordX']
+            """
             candidates_pos = util.world_2_voxel(candidates_pos, origin, spacing)
             candidates_neg = util.world_2_voxel(candidates_neg, origin, spacing)
-            candidates_pos = np.round(candidates_pos).astype(np.int)
-            candidates_neg = np.round(candidates_neg).astype(np.int)
+            print len(candidates_pos), len(candidates_neg)
+            # util.ims_vis([img[0,:,:], img[:,0,:],img[:,:,0]])
+            """ Data Augmentation for postive candidates
+            Translation, Rotation and Multi-Scale
+            """
+            # Translation for each axis
+            translations_z = [0] #[-1, 0, 1]
+            translations_y = [-1, 0, 1] #[-2, -1, 0, 1, 2]
+            translations_x = [-1, 0, 1] # [-2, -1, 0, 1, 2]
+            translations_list = []
+            for axis_z in translations_z:
+                for axis_y in translations_y:
+                    for axis_x in translations_x:
+                        translations_list.append([axis_z, axis_y, axis_x])
+            # Postive candidates augmentation
+            pos_num = len(candidates_pos)
+            for pos_index in xrange(pos_num):
+                for trans in translations_list:
+                    new_cand = np.array(candidates_pos[pos_index], copy=True)
+                    new_cand += np.array(trans)
+                    candidates_pos = np.vstack((candidates_pos, new_cand))
+            # Rotation: rotation already implement in translation
+            # rotation = [90, 180, 270]
+            # Multi-Scale
+            scales = [[8, 16, 16], [16, 28, 28], [24, 40, 40]]
+            """ Prepare postive patch
+            all patch zoom to fixed shape
+            """
+            fixed_shape = [24, 40, 40]
+            # fig, axes = plt.subplots(1, 2)
+            # plt.ion() # turn on interactive mode
+            candidates_pos_patch = list()
+            for pos_index in xrange(len(candidates_pos)):
+                cand = candidates_pos[pos_index]
+                # crop image patch based on cand and scales and zoom to fixed size
+                for scale in scales:
+                    patch_shape = np.array(scale)
+                    # crop patch
+                    patch_b = util.crop_patch(img.shape, patch_shape, cand)
+                    patch_e = patch_b + patch_shape
+                    im_patch = img[patch_b[0]:patch_e[0], patch_b[1]:patch_e[1], patch_b[2]:patch_e[2]]
+                    # resize image
+                    real_resize = np.array(fixed_shape, dtype=np.float) / im_patch.shape
+                    im_patch = scipy.ndimage.interpolation.zoom(im_patch, real_resize)
+                    # util.vis_seg(axes, [im_patch[im_patch.shape[0]//2,:,:], img[cand[0],:,:]])
+                    candidates_pos_patch.append(im_patch)
+            """construct potive candidates
+            """
+            batch_neg_num = int(math.ceil(batchsize / (float(pos_neg_ratio) + 1.0)))
+            batch_pos_num = batchsize - batch_neg_num
+            # candidates_pos_patch is a list
+            if len(candidates_pos_patch) < batch_pos_num:
+                candidates_pos_patch = candidates_pos_patch * (int(math.ceil(float(batch_pos_num)/len(candidates_pos_patch))))
+            else:
+                # shuffle
+            candidates_pos_patch = candidates_pos_patch[0:batch_pos_num]
+            print len(candidates_pos_patch)
+            """construct negtive candidates
+            """
+            # candidates_neg is a array
+            if len(candidates_neg) < batch_neg_num:
+                neg_list = np.random.randint(len(candidates_neg), size=int(batch_neg_num-len(candidates_neg)))
+                for neg_index in neg_list:
+                    candidates_neg = np.vstack(candidates_neg, candidates_neg[neg_index])
+            else:
+                # shuffle
+            candidates_neg = candidates_neg[0:batch_neg_num]
+            candidates_neg_patch = list()
+            for neg_index in xrange(len(candidates_neg)):
+                cand = candidates_neg[neg_index]
+                patch_shape = np.array(fixed_shape)
+                # crop patch
+                patch_b = util.crop_patch(img.shape, patch_shape, cand)
+                patch_e = patch_b + patch_shape
+                im_patch = img[patch_b[0]:patch_e[0], patch_b[1]:patch_e[1], patch_b[2]:patch_e[2]]
+                candidates_neg_patch.append(im_patch)
+            print len(candidates_neg_patch)
 
-            util.ims_vis([img[0,:,:], img[:,0,:],img[:,:,0]])
-            # prepare patch
-            candidates_patch = list()
-            for i in xrange(len(candidates_pos)):
-                cand = candidates_pos[i]
-                print cand
-                im_patch = img[cand[0]-20:cand[0]+20,cand[1]-20:cand[1]+20,cand[2]-20:cand[2]+20]
-                util.ims_vis([im_patch[im_patch.shape[0]//2,:,:], img[cand[0],:,:]])
-                candidates_patch.append(im_patch)
+
             
-            # print candidates
-            # print candidates[candidates[:,3] > 0]
+
+
+
+            
             exit()
             # crop candidates
 
