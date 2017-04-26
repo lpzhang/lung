@@ -5,21 +5,21 @@ from os.path import isfile, join, splitext
 import csv
 
 class DataManager(object):
-    params=None
-    srcFolder=None
-    resultsDir=None
+    # params=None
+    # srcFolder=None
+    # resultsDir=None
 
-    fileList=None
-    gtList=None
+    # fileList=None
+    # gtList=None
 
-    sitkImages=None
-    sitkGT=None
-    meanIntensityTrain = None
+    # sitkImages=None
+    # sitkGT=None
+    # meanIntensityTrain = None
 
     def __init__(self,srcFolder,resultsDir,parameters):
-        self.params=parameters
+        # self.params=parameters
         self.srcFolder=srcFolder
-        self.resultsDir=resultsDir
+        # self.resultsDir=resultsDir
         self.candidates_file = join(srcFolder, "CSVFILES/candidates.csv")
 
     def load_candidates(self):
@@ -41,13 +41,16 @@ class DataManager(object):
     def createImageFileList(self):
         '''IMDB store a list of items dict
         Each item dict has key:
-        seriesuid, fpath, candidates
-        candidates is a list of candidate which is ['coordX', 'coordY', 'coordZ', 'class']
+        seriesuid, fpath, candidates_pos, candidates_neg
+        candidates_pos is a list of postive candidate which is ['coordZ', 'coordY', 'coordX']
+        candidates_neg is a list of negtive candidate which is ['coordZ', 'coordY', 'coordX']
         '''
         self.imdb = list()
         # new item start
+        # ignore first line which is header
+        cand = self.candidates[1]
+        seriesuid = cand[0]
         item = dict()
-        seriesuid = self.candidates[1][0]
         item['seriesuid'] = seriesuid
         item['fpath'] = self.filedict[seriesuid]
         item['candidates_pos'] = list()
@@ -59,15 +62,13 @@ class DataManager(object):
                 # save previous item
                 self.imdb.append(item)
                 # new item start
-                item = dict()
                 seriesuid = cand[0]
+                item = dict()
                 item['seriesuid'] = seriesuid
                 item['fpath'] = self.filedict[seriesuid]
                 item['candidates_pos'] = list()
                 item['candidates_neg'] = list()
-            # append candicate ['coordX', 'coordY', 'coordZ', 'class'] to current item's candidates list
-            # item['candidates'].append(cand[1:])
-            # append candicate ['coordZ', 'coordY', 'coordX', 'class'] to current item's candidates list
+            # append candicate ['coordZ', 'coordY', 'coordX'] to current item's candidates list
             candidates_coord = [cand[3], cand[2], cand[1]]
             if int(cand[4]) > 0:
                 item['candidates_pos'].append(candidates_coord)
@@ -84,7 +85,6 @@ class DataManager(object):
 
         self.trainingdb = list()
         validation_set = 'subset9'
-        # print len(self.imdb)
         for item in self.imdb:
             if validation_set in item['fpath']:
                 continue
@@ -93,25 +93,22 @@ class DataManager(object):
             else:
                 self.trainingdb.append(item)
 
-        # print len(self.trainingdb)
+    def loadValData(self):
+        self.load_candidates()
+        self.load_images()
+        self.createImageFileList()
 
+        self.validationdb = list()
+        validation_set = 'subset9'
+        for item in self.imdb:
+            if validation_set in item['fpath']:
+                self.validationdb.append(item)
 
+    def loadTestData(self):
+        self.load_candidates()
+        self.load_images()
+        self.createImageFileList()
 
-# a = list()
-# b = np.array([1,2,3])
-# a.append(b)
-# b = np.array([11,22,33])
-# a.append(b)
-# b = np.array([111,222,333])
-# a.append(b)
-# b = np.array([1111,2222,3333])
-# a.append(b)
-# b = np.array([1111,2222,3333])
-# a.append(b)
-
-# print a
-# c = np.array(a)
-# print c
-
-# print len(c)
-# print c[0:3]
+        self.testdb = list()
+        for item in self.imdb:
+            self.testdb.append(item)

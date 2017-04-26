@@ -82,37 +82,58 @@ def normalizer(im, src_range, dst_range=[0.0, 1.0]):
     im[im>dst_range[1]] = dst_range[1]
     return im
 
-def ims_vis(ims):
-    '''Function to display row of images'''
-    fig, axes = plt.subplots(1, len(ims))
-    for i, im in enumerate(ims):
-        # axes[i].imshow(im, cmap='gray', origin='upper')
-        axes[i].imshow(im, cmap='gray')
-    plt.show()
+# def ims_vis(ims):
+#     '''Function to display row of images'''
+#     fig, axes = plt.subplots(1, len(ims))
+#     for i, im in enumerate(ims):
+#         # axes[i].imshow(im, cmap='gray', origin='upper')
+#         axes[i].imshow(im, cmap='gray')
+#     plt.show()
 
-def vis_seg(axes, ims):
+def ims_vis(axes, ims):
 	'''Function to display row of images'''
 	for i, im in enumerate(ims):
 		axes[i].imshow(im, cmap='gray', origin='upper')
 	plt.show()
 	plt.pause(0.00001)
 
-def crop_patch(image_shape, patch_shape, centre_coordinates):
+def crop_patch(image, patch_size, centre_coordinates):
 	'''
-	Crop patch from image based on patch_shape and centre_coordinates
-	Return patch_b which is the begin index of the patch in original image
-	patch can construct from im[patch_b:patch_b+patch_shape]
+	Crop patch from image based on patch_size and centre_coordinates
+	Return cropped_patch
 	'''
-	im_shape = np.asarray(image_shape)
-	pa_shape = np.asarray(patch_shape)
-	centre = np.asarray(centre_coordinates)
-	assert len(im_shape)==len(pa_shape) and  len(pa_shape)==len(centre), 'The dimensions must be the same for image_shape, patch_shape, centre_coordinates'
+	im_shape = np.asarray(image.shape)
+	patch_shape = np.asarray(patch_size)
+	centre_coordi = np.asarray(centre_coordinates)
+	assert len(im_shape)==len(patch_shape) and  len(patch_shape)==len(centre_coordi), 'The dimensions must be the same for image, patch_size, centre_coordinates'
+	assert np.sum((patch_shape - im_shape) > 0) == 0, 'patch size must be not greater than image size'
 
-	patch_b = np.round(centre - pa_shape/2).astype(np.int)
-	# Prevent patch_b index out of boundary
-	patch_b[patch_b<0] = 0
-	# Prevent patch_e index out of boundary
-	index_out = (patch_b + pa_shape - im_shape) > 0
-	patch_b[index_out] = im_shape[index_out] - pa_shape[index_out]
+	patch_start = np.round(centre_coordi - patch_shape/2).astype(np.int)
+	# Prevent patch_start index out of boundary
+	patch_start[patch_start<0] = 0
+	# Prevent patch_end index out of boundary
+	index_out = (patch_start + patch_shape - im_shape) > 0
+	patch_start[index_out] = im_shape[index_out] - patch_shape[index_out]
+	patch_end = patch_start + patch_shape
 
-	return patch_b
+	cropped_patch = image[patch_start[0]:patch_end[0], patch_start[1]:patch_end[1], patch_start[2]:patch_end[2]]
+
+	return cropped_patch
+
+def im_list_to_blob(ims, Dtype=np.float32):
+    """Convert a list of images(BGR) into a network input.
+
+    Assumes images are already prepared (means subtracted, BGR order, ...).
+    """
+    max_shape = np.array([im.shape for im in ims]).max(axis=0)
+    assert len(max_shape) == 3, 'image must have 3 dimensions'
+    num_images = len(ims)
+    blob = np.zeros((num_images, max_shape[0], max_shape[1], max_shape[2]), dtype=Dtype)
+    for i in xrange(num_images):
+        im = ims[i].astype(dtype=Dtype, copy=False)
+        blob[i, 0:im.shape[0], 0:im.shape[1], 0:im.shape[2]] = im
+
+    blob = blob[np.newaxis, ...]
+    channel_swap = (1, 0, 2, 3, 4)
+    blob = blob.transpose(channel_swap)
+    return blob

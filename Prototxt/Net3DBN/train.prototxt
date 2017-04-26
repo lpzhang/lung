@@ -1,0 +1,683 @@
+layer {
+  name: "data"
+  type: "Input"
+  top: "data"
+  input_param {
+    shape {
+      dim: 384
+      dim: 1
+      dim: 24
+      dim: 40
+      dim: 40
+    }
+  }
+}
+layer {
+  name: "label"
+  type: "Input"
+  top: "label"
+  input_param {
+    shape {
+      dim: 384
+      dim: 1
+      dim: 1
+      dim: 1
+      dim: 1
+    }
+  }
+}
+layer {
+  name: "d0b_conv"
+  type: "Convolution"
+  bottom: "data"
+  top: "d0b_conv"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 64
+    pad: 1
+    pad: 3
+    pad: 3
+    kernel_size: 3
+    kernel_size: 7
+    kernel_size: 7
+    stride: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d0b_bn"
+  type: "BatchNorm"
+  bottom: "d0b_conv"
+  top: "d0b_bn"
+  param {
+    lr_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+  }
+  batch_norm_param {
+    use_global_stats: false
+  }
+}
+layer {
+  name: "d0b_scale"
+  type: "Scale"
+  bottom: "d0b_bn"
+  top: "d0b_scale"
+  scale_param {
+    axis: 1
+    filler {
+      type: "constant"
+      value: 1.0
+    }
+    bias_term: true
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+  }
+}
+layer {
+  name: "d0b_relu"
+  type: "ReLU"
+  bottom: "d0b_scale"
+  top: "d0b_scale"
+  relu_param {
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d0c_conv"
+  type: "Convolution"
+  bottom: "d0b_scale"
+  top: "d0c_conv"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 64
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d0c_bn"
+  type: "BatchNorm"
+  bottom: "d0c_conv"
+  top: "d0c_bn"
+  param {
+    lr_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+  }
+  batch_norm_param {
+    use_global_stats: false
+  }
+}
+layer {
+  name: "d0c_scale"
+  type: "Scale"
+  bottom: "d0c_bn"
+  top: "d0c_scale"
+  scale_param {
+    axis: 1
+    filler {
+      type: "constant"
+      value: 1.0
+    }
+    bias_term: true
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+  }
+}
+layer {
+  name: "d0c_relu"
+  type: "ReLU"
+  bottom: "d0c_scale"
+  top: "d0c_scale"
+  relu_param {
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d1a_pool"
+  type: "PoolingND"
+  bottom: "d0c_scale"
+  top: "d1a_pool"
+  pooling_nd_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d1b_conv"
+  type: "Convolution"
+  bottom: "d1a_pool"
+  top: "d1b_conv"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 128
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d1b_bn"
+  type: "BatchNorm"
+  bottom: "d1b_conv"
+  top: "d1b_bn"
+  param {
+    lr_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+  }
+  batch_norm_param {
+    use_global_stats: false
+  }
+}
+layer {
+  name: "d1b_scale"
+  type: "Scale"
+  bottom: "d1b_bn"
+  top: "d1b_scale"
+  scale_param {
+    axis: 1
+    filler {
+      type: "constant"
+      value: 1.0
+    }
+    bias_term: true
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+  }
+}
+layer {
+  name: "d1b_relu"
+  type: "ReLU"
+  bottom: "d1b_scale"
+  top: "d1b_scale"
+  relu_param {
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d1c_conv"
+  type: "Convolution"
+  bottom: "d1b_scale"
+  top: "d1c_conv"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 128
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d1c_bn"
+  type: "BatchNorm"
+  bottom: "d1c_conv"
+  top: "d1c_bn"
+  param {
+    lr_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+  }
+  batch_norm_param {
+    use_global_stats: false
+  }
+}
+layer {
+  name: "d1c_scale"
+  type: "Scale"
+  bottom: "d1c_bn"
+  top: "d1c_scale"
+  scale_param {
+    axis: 1
+    filler {
+      type: "constant"
+      value: 1.0
+    }
+    bias_term: true
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+  }
+}
+layer {
+  name: "d1c_relu"
+  type: "ReLU"
+  bottom: "d1c_scale"
+  top: "d1c_scale"
+  relu_param {
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d2a_pool"
+  type: "PoolingND"
+  bottom: "d1c_scale"
+  top: "d2a_pool"
+  pooling_nd_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d2b_conv"
+  type: "Convolution"
+  bottom: "d2a_pool"
+  top: "d2b_conv"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d2b_bn"
+  type: "BatchNorm"
+  bottom: "d2b_conv"
+  top: "d2b_bn"
+  param {
+    lr_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+  }
+  batch_norm_param {
+    use_global_stats: false
+  }
+}
+layer {
+  name: "d2b_scale"
+  type: "Scale"
+  bottom: "d2b_bn"
+  top: "d2b_scale"
+  scale_param {
+    axis: 1
+    filler {
+      type: "constant"
+      value: 1.0
+    }
+    bias_term: true
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+  }
+}
+layer {
+  name: "d2b_relu"
+  type: "ReLU"
+  bottom: "d2b_scale"
+  top: "d2b_scale"
+  relu_param {
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d2c_conv"
+  type: "Convolution"
+  bottom: "d2b_scale"
+  top: "d2c_conv"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d2c_bn"
+  type: "BatchNorm"
+  bottom: "d2c_conv"
+  top: "d2c_bn"
+  param {
+    lr_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+  }
+  batch_norm_param {
+    use_global_stats: false
+  }
+}
+layer {
+  name: "d2c_scale"
+  type: "Scale"
+  bottom: "d2c_bn"
+  top: "d2c_scale"
+  scale_param {
+    axis: 1
+    filler {
+      type: "constant"
+      value: 1.0
+    }
+    bias_term: true
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+  }
+}
+layer {
+  name: "d2c_relu"
+  type: "ReLU"
+  bottom: "d2c_scale"
+  top: "d2c_scale"
+  relu_param {
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d3a_pool"
+  type: "PoolingND"
+  bottom: "d2c_scale"
+  top: "d3a_pool"
+  pooling_nd_param {
+    pool: AVE
+    kernel_size: 3
+    kernel_size: 5
+    kernel_size: 5
+    stride: 1
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d3b_conv"
+  type: "Convolution"
+  bottom: "d3a_pool"
+  top: "d3b_conv"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 512
+    pad: 0
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d3b_bn"
+  type: "BatchNorm"
+  bottom: "d3b_conv"
+  top: "d3b_bn"
+  param {
+    lr_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+  }
+  batch_norm_param {
+    use_global_stats: false
+  }
+}
+layer {
+  name: "d3b_scale"
+  type: "Scale"
+  bottom: "d3b_bn"
+  top: "d3b_scale"
+  scale_param {
+    axis: 1
+    filler {
+      type: "constant"
+      value: 1.0
+    }
+    bias_term: true
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+  }
+}
+layer {
+  name: "d3b_relu"
+  type: "ReLU"
+  bottom: "d3b_scale"
+  top: "d3b_scale"
+  relu_param {
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d3c_conv"
+  type: "Convolution"
+  bottom: "d3b_scale"
+  top: "d3c_conv"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 512
+    pad: 0
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d3c_bn"
+  type: "BatchNorm"
+  bottom: "d3c_conv"
+  top: "d3c_bn"
+  param {
+    lr_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+  }
+  batch_norm_param {
+    use_global_stats: false
+  }
+}
+layer {
+  name: "d3c_scale"
+  type: "Scale"
+  bottom: "d3c_bn"
+  top: "d3c_scale"
+  scale_param {
+    axis: 1
+    filler {
+      type: "constant"
+      value: 1.0
+    }
+    bias_term: true
+    bias_filler {
+      type: "constant"
+      value: 0.0
+    }
+  }
+}
+layer {
+  name: "d3c_relu"
+  type: "ReLU"
+  bottom: "d3c_scale"
+  top: "d3c_scale"
+  relu_param {
+    engine: CAFFE
+  }
+}
+layer {
+  name: "d3b_ip"
+  type: "InnerProduct"
+  bottom: "d3c_scale"
+  top: "d3b_ip"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "d3b_ip"
+  bottom: "label"
+  top: "loss"
+  loss_weight: 1.0
+  phase: TRAIN
+  loss_param {
+    ignore_label: 255
+  }
+}
