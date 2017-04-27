@@ -31,6 +31,11 @@ def read_csv(filename):
 
 	return lines
 
+def write_csv(filename, lines):
+    with open(filename, "wb") as f:
+        csvwriter = csv.writer(f)
+        csvwriter.writerows(lines)
+
 '''
 This function is used to convert the world coordinates to voxel coordinates using 
 the origin and spacing of the ct_scan

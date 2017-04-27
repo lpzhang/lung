@@ -16,6 +16,7 @@ from scipy import ndimage
 import math
 import h5py
 from medpy import metric
+from evaluationScript.noduleCADEvaluationLUNA16 import noduleCADEvaluation
 
 class VNet(object):
     # params=None
@@ -251,20 +252,9 @@ class VNet(object):
 
         self.trainThread(dataQueue, solver)
 
-
-    def test(self):
-        self.dataManagerTest = DM.DataManager(self.params['ModelParams']['dirTest'], self.params['ModelParams']['dirResult'], self.params['DataManagerParams'])
-        self.dataManagerTest.loadTestData()
-
-        net = caffe.Net(self.params['ModelParams']['prototxtTest'],
-                        self.params['ModelParams']['SnapshotPrefix'] + "_iter_" + str(self.params['ModelParams']['snapshot']) + ".caffemodel",
-                        caffe.TEST)
-
-        # store the results, key is the seriesuid
-        results = {}
-
-        print len(self.dataManagerTest.testdb)
-        for ind_data in xrange(len(self.dataManagerTest.testdb)):
+    def prepareTestDataThread(self, dataQueue, index):
+        whichDataList = range(index[0],index[1])
+        for ind_data in whichDataList:
             """ Get Item Infos
             """
             item = self.dataManagerTest.testdb[ind_data]
@@ -272,7 +262,7 @@ class VNet(object):
             fpath = item["fpath"]
             candidates_pos_world = np.array(item['candidates_pos'], np.float)
             candidates_neg_world = np.array(item['candidates_neg'], np.float)
-            print ind_data, fpath
+            # print ind_data, fpath
             """ Load image infos, While in numpy, an array is indexed in the opposite order (z,y,x)
             """
             img, origin, spacing = util.load_itk_image(fpath)
@@ -298,7 +288,7 @@ class VNet(object):
                 candidates_world = np.concatenate((candidates_pos_world, candidates_neg_world))
             candidates = util.world_2_voxel(candidates_world, origin, spacing)
             num_cand = len(candidates)
-            print num_pos, num_neg, num_cand
+            # print num_pos, num_neg, num_cand
             """ Data Augmentation for postive candidates
             Translation, Rotation and Multi-Scale
             """
@@ -335,10 +325,45 @@ class VNet(object):
                 label_neg = np.zeros(num_neg,dtype=np.float)
                 label = np.concatenate((label_pos, label_neg))
 
-            probability = np.zeros((num_cand, num_scale), dtype=np.float)
-            max_batch_size = 512
+            # Construct batch
+            blobs = dict()
             for ind_scale in xrange(num_scale):
-                blob_data = util.im_list_to_blob(candidates_patch['scale_{}'.format(ind_scale)])
+                key = 'scale_{}'.format(ind_scale)
+                blobs[key] = util.im_list_to_blob(candidates_patch[key])
+
+            dataQueue.put(tuple((seriesuid, candidates_world, blobs, label)))
+
+
+    def testThread(self,dataQueue,net):
+        # store the results, key is the seriesuid
+        results = {}
+        # all seriesuids
+        seriesuids_list = list()
+        for ind_data in xrange(len(self.dataManagerTest.testdb)):
+            item = self.dataManagerTest.testdb[ind_data]
+            seriesuid = item['seriesuid']
+            fpath = item["fpath"]
+            seriesuids_list.append(seriesuid)
+        # forward
+        # probability = np.zeros((num_cand, num_scale), dtype=np.float)
+        max_batch_size = 512
+        while len(seriesuids_list) > 0:
+            # for each seriesuid
+            [seriesuid, candidates_world, blobs, label] = dataQueue.get()
+            if seriesuid not in seriesuids_list:
+                print 'error seriesuid duplicated'
+                break
+            # remove seriesuid
+            seriesuids_list.remove(seriesuid)
+            # print infos
+            print '---{}/{}---'.format(len(self.dataManagerTest.testdb)-len(seriesuids_list), len(self.dataManagerTest.testdb))
+            print '{}'.format(seriesuid)
+
+            num_cand, num_scale = len(label), len(blobs)
+            probability = np.zeros((num_cand, num_scale), dtype=np.float)
+            for ind_scale in xrange(num_scale):
+                key = 'scale_{}'.format(ind_scale)
+                blob_data = blobs[key]
                 # Prevent batch size too large to exceed gpu memory
                 for split in xrange(num_cand // max_batch_size + 1):
                     batch_start =  max_batch_size * split
@@ -351,67 +376,122 @@ class VNet(object):
                     # print net.blobs['data'].data[...].shape
                     # net.reshape() # optinal -- the net will reshape automatically before a call to forward()
                     net.blobs['data'].data[...] = input_data.astype(dtype=np.float32)
-                    out = net.forward()
-                    prob = out["prob"]
+                    output_data = net.forward()
+                    prob = output_data["prob"]
                     # print prob.shape
                     probability[batch_start:batch_end, ind_scale] = prob[:,1]
 
             evaluation_array = np.zeros((num_cand, 7), dtype=np.float)
             for ind_cand in xrange(num_cand):
+                # coordZ,coordY,coordX to coordX,coordY,coordZ
                 evaluation_array[ind_cand, 0:3] = candidates_world[ind_cand,::-1]
                 evaluation_array[ind_cand, 3] = label[ind_cand]
                 evaluation_array[ind_cand, 4:7] = probability[ind_cand, :]
             results[seriesuid] = evaluation_array
-            # results[fpath] = evaluation_array
-            # print evaluation_array.shape
-            if num_pos > 0:
-                print evaluation_array[0:num_pos,:]
+            print '--- done ---'
 
-        fsave = os.path.join(self.params['ModelParams']['dirResult'], 'results_all.h5')
+        fsave = os.path.join(self.params['ModelParams']['dirResult'], 'Candidates_V2.h5')
         h5f = h5py.File(fsave, 'w')
         for k,v in results.items():
             h5f.create_dataset(k, data=v)
         h5f.close()
-        print 'saved'
+        print 'Results saved at {}'.format(fsave)
+        print '--- DONE ---'
+        return fsave
 
-    def eval(self):
-        fsave = os.path.join(self.params['ModelParams']['dirResult'], 'results_all.h5')
-        h5f = h5py.File(fsave, 'r')
+
+    def test(self):
+        self.dataManagerTest = DM.DataManager(self.params['ModelParams']['dirTest'], self.params['ModelParams']['dirResult'], self.params['DataManagerParams'])
+        self.dataManagerTest.loadTestData()
+
+        # self.dataManagerTest.testdb = self.dataManagerTest.testdb[0:6]
+        howManyImages = len(self.dataManagerTest.testdb)
+        print "The dataset has {} data".format(howManyImages)
+
+        net = caffe.Net(self.params['ModelParams']['prototxtTest'],
+                        self.params['ModelParams']['SnapshotPrefix'] + "_iter_" + str(self.params['ModelParams']['snapshot']) + ".caffemodel",
+                        caffe.TEST)
+
+        dataQueue = Queue(30) #max 50 images in queue
+        dataPreparation = [None] * self.params['ModelParams']['nProc']
+        #thread creation
+        for proc in range(0,self.params['ModelParams']['nProc']):
+            # split data
+            split_start = (howManyImages//self.params['ModelParams']['nProc'] + 1) * proc
+            split_end = (howManyImages//self.params['ModelParams']['nProc'] + 1) * (proc + 1)
+            if split_end > howManyImages:
+                split_end = howManyImages
+            index = (split_start, split_end)
+
+            dataPreparation[proc] = Process(target=self.prepareTestDataThread, args=(dataQueue,index))
+            dataPreparation[proc].daemon = True
+            dataPreparation[proc].start()
+
+        fsave = self.testThread(dataQueue, net)
+
+        ''' Evaluation
+        '''
+        output_dir = os.path.join(self.params['ModelParams']['dirResult'], 'evaluation')
+        self.eval(fsave,output_dir)
+        print 'Evaluation Done'
+
+    def eval(self, eval_filename=None, output_dir=None):
+        assert eval_filename is not None, 'eval_filename is not assigned'
+        assert output_dir is not None, 'output_dir is not assigned'
+
+        annotations_filename          = os.path.join(self.params['ModelParams']['dirEvaluation'],'annotations/annotations.csv')
+        annotations_excluded_filename = os.path.join(self.params['ModelParams']['dirEvaluation'],'annotations/annotations_excluded.csv')
+        seriesuids_filename           = os.path.join(self.params['ModelParams']['dirEvaluation'],'annotations/seriesuids.csv')
+        results_filename              = eval_filename
+        outputDir                     = output_dir
+        if not os.path.exists(outputDir):
+            os.makedirs(outputDir)
+        assert os.path.exists(results_filename), 'File does not exist: {}'.format(results_filename)
+
+        h5f = h5py.File(results_filename, 'r')
         # np.set_printoptions(precision=1)
+        seriesuids_list = list()
+        evaluation_array = np.zeros((1, 7), dtype=np.float)
         for k,v in h5f.items():
-            print k
-            print v[:][0:10,:]
-        # evaluation_matrix = h5f['evaluation_matrix'][:]
-        # h5f.close()
-        # print evaluation_matrix.shape
-        # label = evaluation_matrix[:,0]
-        # prob = evaluation_matrix[:,1:]
-        # # average scores
+            # seriesuid.append(k)
+            seriesuid = list()
+            seriesuid.append(k)
+            seriesuid = seriesuid*(v[:].shape[0])
+            seriesuids_list.extend(seriesuid)
+            evaluation_array = np.concatenate((evaluation_array, v[:]), axis=0)
+        h5f.close()
+        evaluation_array = evaluation_array[1:]
+        # print evaluation_array.shape, len(seriesuids_list)
+        # print evaluation_array[0]
+        # print seriesuids_list[0]
+        label = evaluation_array[:,3]
+        prob = evaluation_array[:,4:7]
+        # average scores
         # ave_scores = np.mean(prob, axis=1)
-        # p = ave_scores[(label<0.5) & (ave_scores>0.5)]
+        weight = np.array([.3,.5,.2]).reshape(1,3)
+        ave_scores = np.sum(prob*weight, axis=1)
+        # p = ave_scores[(label<0.5) & (ave_scores>0.8)]
         # print p.shape
-        # # print p
-        # print metric.binary.jc(ave_scores>=0.5, label >=0.5)
-        # print metric.binary.recall(ave_scores>=0.5, label >=0.5)
-        # print metric.binary.precision(ave_scores>=0.5, label >=0.5)
+        # print p
+        print metric.binary.jc(ave_scores>=0.5, label >=0.5)
+        print metric.binary.recall(ave_scores>=0.5, label >=0.5)
+        print metric.binary.precision(ave_scores>=0.5, label >=0.5)
+        # ave_scores_list = ave_scores.tolist()
+        # print len(ave_scores_list)
+        # print ave_scores_list[0]
+        #seriesuid,coordX,coordY,coordZ,probability
+        results = list()
+        results.append(['seriesuid','coordX', 'coordY', 'coordZ', 'probability'])
+        for ind_seriesuid in xrange(len(seriesuids_list)):
+            seriesuid = seriesuids_list[ind_seriesuid]
+            coordX = evaluation_array[ind_seriesuid, 0]
+            coordY = evaluation_array[ind_seriesuid, 1]
+            coordZ = evaluation_array[ind_seriesuid, 2]
+            probability = ave_scores[ind_seriesuid]
+            results.append([seriesuid, coordX, coordY, coordZ, probability])
 
-
-
-
-
-        # results = dict()
-
-        # for key in numpyImages:
-
-        #     btch = np.reshape(numpyImages[key],[1,1,numpyImages[key].shape[0],numpyImages[key].shape[1],numpyImages[key].shape[2]])
-
-        #     net.blobs['data'].data[...] = btch
-
-        #     out = net.forward()
-        #     l = out["labelmap"]
-        #     labelmap = np.squeeze(l[0,1,:,:,:])
-
-        #     results[key] = np.squeeze(labelmap)
-
-        #     self.dataManagerTest.writeResultsFromNumpyLabel(np.squeeze(labelmap),key)
-
+        results_filename = os.path.splitext(results_filename)[0] + '.csv'
+        util.write_csv(results_filename, results)
+        ### noduleCADEvaluation ###
+        noduleCADEvaluation(annotations_filename,annotations_excluded_filename,seriesuids_filename,results_filename,outputDir)
+        print "Finished!"

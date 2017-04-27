@@ -18,14 +18,15 @@ params['ModelParams']['prototxtTest']=os.path.join(basePath,'Prototxt/Net3DBN/te
 params['ModelParams']['snapshot']=24000
 params['ModelParams']['dirTrain']=os.path.join(basePath,'data/lungnodule')
 params['ModelParams']['dirTest']=os.path.join(basePath,'data/lungnodule')
-params['ModelParams']['dirResult']=os.path.join(basePath,'result') #where we need to save the results (relative to the base path)
+params['ModelParams']['dirEvaluation']=os.path.join(basePath,'evaluationScript')
+params['ModelParams']['dirResult']=os.path.join(basePath,'result/Net3DBN') #where we need to save the results (relative to the base path)
 params['ModelParams']['dirSnapshots']=os.path.join(basePath,'output/Net3DBN') #where to save the models while training
 params['ModelParams']['SnapshotPrefix']= os.path.join(params['ModelParams']['dirSnapshots'],'Net3DBN_384')
 params['ModelParams']['SnapshotIters'] = 8000
 params['ModelParams']['batchsize'] = 384 #the batchsize
 params['ModelParams']['numIterations'] = 24000 #the number of iterations
 params['ModelParams']['baseLR'] = 0.01 #the learning rate, initial one
-params['ModelParams']['nProc'] = 2 #the number of threads to do data augmentation
+params['ModelParams']['nProc'] = 10 #the number of threads to do data augmentation
 
 
 

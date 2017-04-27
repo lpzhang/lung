@@ -20,7 +20,7 @@ class DataManager(object):
         # self.params=parameters
         self.srcFolder=srcFolder
         # self.resultsDir=resultsDir
-        self.candidates_file = join(srcFolder, "CSVFILES/candidates.csv")
+        self.candidates_file = join(srcFolder, "CSVFILES/candidates_V2.csv")
 
     def load_candidates(self):
         self.candidates=list()
