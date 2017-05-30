@@ -41,8 +41,10 @@ if not os.path.exists(params['ModelParams']['dirResult']):
 	os.makedirs(params['ModelParams']['dirResult'])
 
 model=VN.VNet(params)
-# model.eval()
-model.test()
+fsave = os.path.join(params['ModelParams']['dirResult'], 'Candidates_V2.h5')
+output_dir = os.path.join(params['ModelParams']['dirResult'], 'evaluation_2')
+model.eval(fsave,output_dir)
+# model.test()
 # model.train()
 # train = [i for i, j in enumerate(sys.argv) if j == '-train']
 # if len(train)>0:

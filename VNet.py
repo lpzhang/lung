@@ -299,7 +299,7 @@ class VNet(object):
             all patch zoom to fixed shape
             """
             fixed_shape = [24, 40, 40]
-            fig, axes = plt.subplots(1, 2)
+            #fig, axes = plt.subplots(1, 2)
             # plt.ion() # turn on interactive mode
             candidates_patch = dict()
             for ind_scale in xrange(num_scale):
@@ -349,10 +349,10 @@ class VNet(object):
         max_batch_size = 512
         while len(seriesuids_list) > 0:
             # for each seriesuid
+            print dataQueue.qsize()
             [seriesuid, candidates_world, blobs, label] = dataQueue.get()
-            if seriesuid not in seriesuids_list:
-                print 'error seriesuid duplicated'
-                break
+            assert seriesuid in seriesuids_list, 'error seriesuid duplicated' 
+            print dataQueue.qsize()
             # remove seriesuid
             seriesuids_list.remove(seriesuid)
             # print infos
@@ -364,20 +364,23 @@ class VNet(object):
             for ind_scale in xrange(num_scale):
                 key = 'scale_{}'.format(ind_scale)
                 blob_data = blobs[key]
+                print key
                 # Prevent batch size too large to exceed gpu memory
-                for split in xrange(num_cand // max_batch_size + 1):
+                for split in xrange(int(np.ceil(float(num_cand)/max_batch_size))):
+                # for split in xrange(num_cand // max_batch_size + 1):
                     batch_start =  max_batch_size * split
                     batch_end = max_batch_size * (split + 1 )
                     if batch_end > num_cand:
                         batch_end = num_cand
                     input_data = blob_data[batch_start:batch_end,:,:,:,:]
-                    # print batch_start, batch_end, input_data.shape
+                    print batch_start, batch_end, input_data.shape
                     net.blobs['data'].reshape(input_data.shape[0],input_data.shape[1],input_data.shape[2],input_data.shape[3],input_data.shape[4])
-                    # print net.blobs['data'].data[...].shape
+                    print net.blobs['data'].data[...].shape
                     # net.reshape() # optinal -- the net will reshape automatically before a call to forward()
                     net.blobs['data'].data[...] = input_data.astype(dtype=np.float32)
                     output_data = net.forward()
                     prob = output_data["prob"]
+                    print prob.shape
                     # print prob.shape
                     probability[batch_start:batch_end, ind_scale] = prob[:,1]
 
@@ -412,13 +415,13 @@ class VNet(object):
                         self.params['ModelParams']['SnapshotPrefix'] + "_iter_" + str(self.params['ModelParams']['snapshot']) + ".caffemodel",
                         caffe.TEST)
 
-        dataQueue = Queue(30) #max 50 images in queue
+        dataQueue = Queue(10) #max 50 images in queue
         dataPreparation = [None] * self.params['ModelParams']['nProc']
         #thread creation
         for proc in range(0,self.params['ModelParams']['nProc']):
             # split data
-            split_start = (howManyImages//self.params['ModelParams']['nProc'] + 1) * proc
-            split_end = (howManyImages//self.params['ModelParams']['nProc'] + 1) * (proc + 1)
+            split_start = int(np.ceil(float(howManyImages)/self.params['ModelParams']['nProc'])) * proc
+            split_end = int(np.ceil(float(howManyImages)/self.params['ModelParams']['nProc'])) * (proc + 1)
             if split_end > howManyImages:
                 split_end = howManyImages
             index = (split_start, split_end)
@@ -467,9 +470,9 @@ class VNet(object):
         label = evaluation_array[:,3]
         prob = evaluation_array[:,4:7]
         # average scores
-        # ave_scores = np.mean(prob, axis=1)
-        weight = np.array([.3,.5,.2]).reshape(1,3)
-        ave_scores = np.sum(prob*weight, axis=1)
+        ave_scores = np.mean(prob, axis=1)
+        # weight = np.array([.3,.5,.2]).reshape(1,3)
+        # ave_scores = np.sum(prob*weight, axis=1)
         # p = ave_scores[(label<0.5) & (ave_scores>0.8)]
         # print p.shape
         # print p
