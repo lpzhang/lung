@@ -31,7 +31,8 @@ class VNet(object):
     def prepareDataThread(self, dataQueue):
         nr_iter = self.params['ModelParams']['numIterations']
         batchsize = self.params['ModelParams']['batchsize']
-        pos_neg_ratio = 0.334
+        #pos_neg_ratio = 0.334
+        pos_neg_ratio = 1
 
         # nr_iter_dataAug = nr_iter*batchsize
         nr_iter_dataAug = nr_iter
