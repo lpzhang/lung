@@ -38,6 +38,10 @@ layer {
     pad: 3
     kernel_size: 7
     stride: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -85,7 +89,6 @@ layer {
 layer {
   name: "res2a_branch1"
   type: "Convolution"
-#  bottom: "pool1"
   bottom: "conv1"
   top: "res2a_branch1"
   convolution_param {
@@ -94,6 +97,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -118,7 +125,6 @@ layer {
 layer {
   name: "res2a_branch2a"
   type: "Convolution"
-#  bottom: "pool1"
   bottom: "conv1"
   top: "res2a_branch2a"
   convolution_param {
@@ -127,6 +133,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -168,6 +178,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -209,6 +223,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -260,6 +278,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -301,6 +323,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -342,6 +368,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -393,6 +423,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -434,6 +468,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -475,6 +513,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -526,6 +568,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -558,6 +604,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -599,6 +649,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -640,6 +694,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -691,6 +749,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -732,6 +794,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -773,6 +839,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -824,6 +894,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -865,6 +939,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -906,6 +984,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -957,6 +1039,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -998,6 +1084,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1039,6 +1129,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1090,6 +1184,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1122,6 +1220,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1163,6 +1265,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1204,6 +1310,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1255,6 +1365,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1296,6 +1410,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1337,6 +1455,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1388,6 +1510,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1429,6 +1555,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1470,6 +1600,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1521,6 +1655,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1562,6 +1700,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1603,6 +1745,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1654,6 +1800,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1695,6 +1845,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1736,6 +1890,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1787,6 +1945,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1828,6 +1990,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1869,6 +2035,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1920,6 +2090,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1952,6 +2126,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1993,6 +2171,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -2034,6 +2216,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -2085,6 +2271,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -2126,6 +2316,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -2167,6 +2361,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -2218,6 +2416,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -2259,6 +2461,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -2300,6 +2506,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -2371,7 +2581,7 @@ layer {
   bottom: "pool5"
   top: "classifier"
   inner_product_param {
-    num_output: 3
+    num_output: 2
   }
 }
 layer {
