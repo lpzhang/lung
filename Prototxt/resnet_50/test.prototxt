@@ -4,14 +4,16 @@ layer {
   top: "data"
   input_param {
     shape {
+      dim: 32
       dim: 1
-      dim: 1
-      dim: 232
-      dim: 232
-      dim: 8
+      dim: 24
+      dim: 40
+      dim: 40
     }
   }
 }
+
+### resnet 50 ###
 layer {
   name: "conv1"
   type: "Convolution"
@@ -23,6 +25,10 @@ layer {
     pad: 3
     kernel_size: 7
     stride: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -53,21 +59,24 @@ layer {
     engine: CAFFE
   }
 }
-layer {
-  name: "pool1"
-  type: "Pooling"
-  bottom: "conv1"
-  top: "pool1"
-  pooling_param {
-    pool: MAX
-    kernel_size: 3
-    stride: 2
-  }
-}
+### remove pool1
+#layer {
+#  name: "pool1"
+#  type: "Pooling"
+#  bottom: "conv1"
+#  top: "pool1"
+#  pooling_param {
+#    pool: MAX
+#    kernel_size: 3
+#    stride: 2
+#  }
+#}
+
+### ###
 layer {
   name: "res2a_branch1"
   type: "Convolution"
-  bottom: "pool1"
+  bottom: "conv1"
   top: "res2a_branch1"
   convolution_param {
     num_output: 256
@@ -75,6 +84,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -99,7 +112,7 @@ layer {
 layer {
   name: "res2a_branch2a"
   type: "Convolution"
-  bottom: "pool1"
+  bottom: "conv1"
   top: "res2a_branch2a"
   convolution_param {
     num_output: 64
@@ -107,6 +120,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -148,6 +165,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -189,6 +210,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -240,6 +265,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -281,6 +310,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -322,6 +355,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -373,6 +410,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -414,6 +455,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -455,6 +500,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -506,6 +555,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -538,6 +591,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -579,6 +636,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -620,6 +681,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -671,6 +736,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -712,6 +781,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -753,6 +826,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -804,6 +881,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -845,6 +926,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -886,6 +971,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -937,6 +1026,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -978,6 +1071,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1019,6 +1116,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1070,6 +1171,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1102,6 +1207,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1143,6 +1252,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1184,6 +1297,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1235,6 +1352,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1276,6 +1397,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1317,6 +1442,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1368,6 +1497,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1409,6 +1542,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1450,6 +1587,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1482,6 +1623,15 @@ layer {
   }
 }
 layer {
+  name: "res4c_relu"
+  type: "ReLU"
+  bottom: "res4c"
+  top: "res4c"
+  relu_param {
+    engine: CAFFE
+  }
+}
+layer {
   name: "res4d_branch2a"
   type: "Convolution"
   bottom: "res4c"
@@ -1492,157 +1642,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
-    engine: CAFFE
-  }
-}
-layer {
-  name: "res4d_branch2b"
-  type: "Convolution"
-  bottom: "res4d_branch2a"
-  top: "res4d_branch2b"
-  convolution_param {
-    num_output: 256
-    bias_term: false
-    pad: 1
-    kernel_size: 3
-    stride: 1
-    engine: CAFFE
-  }
-}
-layer {
-  name: "res4d_branch2c"
-  type: "Convolution"
-  bottom: "res4d_branch2b"
-  top: "res4d_branch2c"
-  convolution_param {
-    num_output: 1024
-    bias_term: false
-    pad: 0
-    kernel_size: 1
-    stride: 1
-    engine: CAFFE
-  }
-}
-layer {
-  name: "res4d"
-  type: "Eltwise"
-  bottom: "res4c"
-  bottom: "res4d_branch2c"
-  top: "res4d"
-  eltwise_param {
-    operation: SUM
-  }
-}
-layer {
-  name: "res4e_branch2a"
-  type: "Convolution"
-  bottom: "res4d"
-  top: "res4e_branch2a"
-  convolution_param {
-    num_output: 256
-    bias_term: false
-    pad: 0
-    kernel_size: 1
-    stride: 1
-    engine: CAFFE
-  }
-}
-layer {
-  name: "res4e_branch2b"
-  type: "Convolution"
-  bottom: "res4e_branch2a"
-  top: "res4e_branch2b"
-  convolution_param {
-    num_output: 256
-    bias_term: false
-    pad: 1
-    kernel_size: 3
-    stride: 1
-    engine: CAFFE
-  }
-}
-layer {
-  name: "res4e_branch2c"
-  type: "Convolution"
-  bottom: "res4e_branch2b"
-  top: "res4e_branch2c"
-  convolution_param {
-    num_output: 1024
-    bias_term: false
-    pad: 0
-    kernel_size: 1
-    stride: 1
-    engine: CAFFE
-  }
-}
-layer {
-  name: "res4e"
-  type: "Eltwise"
-  bottom: "res4d"
-  bottom: "res4e_branch2c"
-  top: "res4e"
-  eltwise_param {
-    operation: SUM
-  }
-}
-layer {
-  name: "res4f_branch2a"
-  type: "Convolution"
-  bottom: "res4e"
-  top: "res4f_branch2a"
-  convolution_param {
-    num_output: 256
-    bias_term: false
-    pad: 0
-    kernel_size: 1
-    stride: 1
-    engine: CAFFE
-  }
-}
-layer {
-  name: "res4f_branch2b"
-  type: "Convolution"
-  bottom: "res4f_branch2a"
-  top: "res4f_branch2b"
-  convolution_param {
-    num_output: 256
-    bias_term: false
-    pad: 1
-    kernel_size: 3
-    stride: 1
-    engine: CAFFE
-  }
-}
-layer {
-  name: "res4f_branch2c"
-  type: "Convolution"
-  bottom: "res4f_branch2b"
-  top: "res4f_branch2c"
-  convolution_param {
-    num_output: 1024
-    bias_term: false
-    pad: 0
-    kernel_size: 1
-    stride: 1
-    engine: CAFFE
-  }
-}
-layer {
-  name: "res4f"
-  type: "Eltwise"
-  bottom: "res4e"
-  bottom: "res4f_branch2c"
-  top: "res4f"
-  eltwise_param {
-    operation: SUM
-  }
-}
-layer {
-  name: "res4c_relu"
-  type: "ReLU"
-  bottom: "res4f"
-  top: "res4f"
-  relu_param {
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1674,6 +1677,24 @@ layer {
   }
 }
 layer {
+  name: "res4d_branch2b"
+  type: "Convolution"
+  bottom: "res4d_branch2a"
+  top: "res4d_branch2b"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
+    engine: CAFFE
+  }
+}
+layer {
   name: "bn4d_branch2b"
   type: "BatchNorm"
   bottom: "res4d_branch2b"
@@ -1701,6 +1722,24 @@ layer {
   }
 }
 layer {
+  name: "res4d_branch2c"
+  type: "Convolution"
+  bottom: "res4d_branch2b"
+  top: "res4d_branch2c"
+  convolution_param {
+    num_output: 1024
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
+    engine: CAFFE
+  }
+}
+layer {
   name: "bn4d_branch2c"
   type: "BatchNorm"
   bottom: "res4d_branch2c"
@@ -1719,11 +1758,39 @@ layer {
   }
 }
 layer {
+  name: "res4d"
+  type: "Eltwise"
+  bottom: "res4c"
+  bottom: "res4d_branch2c"
+  top: "res4d"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
   name: "res4d_relu"
   type: "ReLU"
   bottom: "res4d"
   top: "res4d"
   relu_param {
+    engine: CAFFE
+  }
+}
+layer {
+  name: "res4e_branch2a"
+  type: "Convolution"
+  bottom: "res4d"
+  top: "res4e_branch2a"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1755,6 +1822,24 @@ layer {
   }
 }
 layer {
+  name: "res4e_branch2b"
+  type: "Convolution"
+  bottom: "res4e_branch2a"
+  top: "res4e_branch2b"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
+    engine: CAFFE
+  }
+}
+layer {
   name: "bn4e_branch2b"
   type: "BatchNorm"
   bottom: "res4e_branch2b"
@@ -1782,6 +1867,24 @@ layer {
   }
 }
 layer {
+  name: "res4e_branch2c"
+  type: "Convolution"
+  bottom: "res4e_branch2b"
+  top: "res4e_branch2c"
+  convolution_param {
+    num_output: 1024
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
+    engine: CAFFE
+  }
+}
+layer {
   name: "bn4e_branch2c"
   type: "BatchNorm"
   bottom: "res4e_branch2c"
@@ -1800,11 +1903,39 @@ layer {
   }
 }
 layer {
+  name: "res4e"
+  type: "Eltwise"
+  bottom: "res4d"
+  bottom: "res4e_branch2c"
+  top: "res4e"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
   name: "res4e_relu"
   type: "ReLU"
   bottom: "res4e"
   top: "res4e"
   relu_param {
+    engine: CAFFE
+  }
+}
+layer {
+  name: "res4f_branch2a"
+  type: "Convolution"
+  bottom: "res4e"
+  top: "res4f_branch2a"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1836,6 +1967,24 @@ layer {
   }
 }
 layer {
+  name: "res4f_branch2b"
+  type: "Convolution"
+  bottom: "res4f_branch2a"
+  top: "res4f_branch2b"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
+    engine: CAFFE
+  }
+}
+layer {
   name: "bn4f_branch2b"
   type: "BatchNorm"
   bottom: "res4f_branch2b"
@@ -1863,6 +2012,24 @@ layer {
   }
 }
 layer {
+  name: "res4f_branch2c"
+  type: "Convolution"
+  bottom: "res4f_branch2b"
+  top: "res4f_branch2c"
+  convolution_param {
+    num_output: 1024
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
+    engine: CAFFE
+  }
+}
+layer {
   name: "bn4f_branch2c"
   type: "BatchNorm"
   bottom: "res4f_branch2c"
@@ -1881,6 +2048,25 @@ layer {
   }
 }
 layer {
+  name: "res4f"
+  type: "Eltwise"
+  bottom: "res4e"
+  bottom: "res4f_branch2c"
+  top: "res4f"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "res4f_relu"
+  type: "ReLU"
+  bottom: "res4f"
+  top: "res4f"
+  relu_param {
+    engine: CAFFE
+  }
+}
+layer {
   name: "res5a_branch1"
   type: "Convolution"
   bottom: "res4f"
@@ -1891,6 +2077,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1923,6 +2113,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -1964,6 +2158,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -2005,6 +2203,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -2056,6 +2258,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -2097,6 +2303,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -2138,6 +2348,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -2189,6 +2403,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -2230,6 +2448,10 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -2271,6 +2493,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.0010000000475
+    }
     engine: CAFFE
   }
 }
@@ -2311,22 +2537,37 @@ layer {
     engine: CAFFE
   }
 }
+#layer {
+#  name: "pool5"
+#  type: "Pooling"
+#  bottom: "res5c"
+#  top: "pool5"
+#  pooling_param {
+#    pool: AVE
+#    global_pooling: true
+#  }
+#}
 layer {
   name: "pool5"
-  type: "Pooling"
+  type: "PoolingND"
   bottom: "res5c"
   top: "pool5"
-  pooling_param {
+  pooling_nd_param {
     pool: AVE
-    global_pooling: true
+    kernel_size: 2
+    kernel_size: 3
+    kernel_size: 3
+    stride: 1
+    engine: CAFFE
   }
 }
+
 layer {
   name: "classifier"
   type: "InnerProduct"
   bottom: "pool5"
   top: "classifier"
   inner_product_param {
-    num_output: 3
+    num_output: 2
   }
 }

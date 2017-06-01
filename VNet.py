@@ -347,7 +347,7 @@ class VNet(object):
             seriesuids_list.append(seriesuid)
         # forward
         # probability = np.zeros((num_cand, num_scale), dtype=np.float)
-        max_batch_size = 512
+        max_batch_size = 64
         while len(seriesuids_list) > 0:
             # for each seriesuid
             print dataQueue.qsize()
