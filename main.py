@@ -15,7 +15,7 @@ params['ModelParams']=dict()
 params['ModelParams']['device']=0
 params['ModelParams']['prototxtTrain']=os.path.join(basePath,'Prototxt/resnet_50/train.prototxt')
 params['ModelParams']['prototxtTest']=os.path.join(basePath,'Prototxt/resnet_50/test.prototxt')
-params['ModelParams']['snapshot']=0
+params['ModelParams']['snapshot']=24000
 params['ModelParams']['dirTrain']=os.path.join(basePath,'data/lungnodule')
 params['ModelParams']['dirTest']=os.path.join(basePath,'data/lungnodule')
 params['ModelParams']['dirEvaluation']=os.path.join(basePath,'evaluationScript')
@@ -44,8 +44,8 @@ model=VN.VNet(params)
 fsave = os.path.join(params['ModelParams']['dirResult'], 'Candidates_V2.h5')
 output_dir = os.path.join(params['ModelParams']['dirResult'], 'evaluation_2')
 #model.eval(fsave,output_dir)
-# model.test()
-model.train()
+model.test()
+#model.train()
 # train = [i for i, j in enumerate(sys.argv) if j == '-train']
 # if len(train)>0:
 #     model.train()
