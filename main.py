@@ -26,7 +26,7 @@ params['ModelParams']['SnapshotIters'] = 8000
 params['ModelParams']['batchsize'] = 32 #the batchsize
 params['ModelParams']['numIterations'] = 24000 #the number of iterations
 params['ModelParams']['baseLR'] = 0.01 #the learning rate, initial one
-params['ModelParams']['nProc'] = 6 #the number of threads to do data augmentation
+params['ModelParams']['nProc'] = 8 #the number of threads to do data augmentation
 
 
 

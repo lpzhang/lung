@@ -380,7 +380,7 @@ class VNet(object):
                     # net.reshape() # optinal -- the net will reshape automatically before a call to forward()
                     net.blobs['data'].data[...] = input_data.astype(dtype=np.float32)
                     output_data = net.forward()
-                    prob = output_data["prob"]
+                    prob = output_data["classifier"]
                     print prob.shape
                     # print prob.shape
                     probability[batch_start:batch_end, ind_scale] = prob[:,1]
