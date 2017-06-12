@@ -49,7 +49,7 @@ layer {
   name: "d0b_bn"
   type: "BatchNorm"
   bottom: "d0b_conv"
-  top: "d0b_bn"
+  top: "d0b_conv"
   batch_norm_param {
     use_global_stats: true
   }
@@ -57,8 +57,8 @@ layer {
 layer {
   name: "d0b_scale"
   type: "Scale"
-  bottom: "d0b_bn"
-  top: "d0b_scale"
+  bottom: "d0b_conv"
+  top: "d0b_conv"
   scale_param {
     axis: 1
     filler {
@@ -75,8 +75,8 @@ layer {
 layer {
   name: "d0b_relu"
   type: "ReLU"
-  bottom: "d0b_scale"
-  top: "d0b_scale"
+  bottom: "d0b_conv"
+  top: "d0b_conv"
   relu_param {
     engine: CAFFE
   }
@@ -84,7 +84,7 @@ layer {
 layer {
   name: "d1a_pool"
   type: "PoolingND"
-  bottom: "d0b_scale"
+  bottom: "d0b_conv"
   top: "d1a_pool"
   pooling_nd_param {
     pool: MAX
@@ -126,7 +126,7 @@ layer {
   name: "d1b_bn"
   type: "BatchNorm"
   bottom: "d1b_conv"
-  top: "d1b_bn"
+  top: "d1b_conv"
   batch_norm_param {
     use_global_stats: true
   }
@@ -134,8 +134,8 @@ layer {
 layer {
   name: "d1b_scale"
   type: "Scale"
-  bottom: "d1b_bn"
-  top: "d1b_scale"
+  bottom: "d1b_conv"
+  top: "d1b_conv"
   scale_param {
     axis: 1
     filler {
@@ -152,8 +152,8 @@ layer {
 layer {
   name: "d1b_relu"
   type: "ReLU"
-  bottom: "d1b_scale"
-  top: "d1b_scale"
+  bottom: "d1b_conv"
+  top: "d1b_conv"
   relu_param {
     engine: CAFFE
   }
@@ -161,7 +161,7 @@ layer {
 layer {
   name: "d1c_conv"
   type: "Convolution"
-  bottom: "d1b_scale"
+  bottom: "d1b_conv"
   top: "d1c_conv"
   param {
     lr_mult: 1.0
@@ -191,7 +191,7 @@ layer {
   name: "d1c_bn"
   type: "BatchNorm"
   bottom: "d1c_conv"
-  top: "d1c_bn"
+  top: "d1c_conv"
   batch_norm_param {
     use_global_stats: true
   }
@@ -199,8 +199,8 @@ layer {
 layer {
   name: "d1c_scale"
   type: "Scale"
-  bottom: "d1c_bn"
-  top: "d1c_scale"
+  bottom: "d1c_conv"
+  top: "d1c_conv"
   scale_param {
     axis: 1
     filler {
@@ -217,8 +217,8 @@ layer {
 layer {
   name: "d1c_relu"
   type: "ReLU"
-  bottom: "d1c_scale"
-  top: "d1c_scale"
+  bottom: "d1c_conv"
+  top: "d1c_conv"
   relu_param {
     engine: CAFFE
   }
@@ -226,7 +226,7 @@ layer {
 layer {
   name: "d2a_pool"
   type: "PoolingND"
-  bottom: "d1c_scale"
+  bottom: "d1c_conv"
   top: "d2a_pool"
   pooling_nd_param {
     pool: MAX
@@ -268,7 +268,7 @@ layer {
   name: "d2b_bn"
   type: "BatchNorm"
   bottom: "d2b_conv"
-  top: "d2b_bn"
+  top: "d2b_conv"
   batch_norm_param {
     use_global_stats: true
   }
@@ -276,8 +276,8 @@ layer {
 layer {
   name: "d2b_scale"
   type: "Scale"
-  bottom: "d2b_bn"
-  top: "d2b_scale"
+  bottom: "d2b_conv"
+  top: "d2b_conv"
   scale_param {
     axis: 1
     filler {
@@ -294,8 +294,8 @@ layer {
 layer {
   name: "d2b_relu"
   type: "ReLU"
-  bottom: "d2b_scale"
-  top: "d2b_scale"
+  bottom: "d2b_conv"
+  top: "d2b_conv"
   relu_param {
     engine: CAFFE
   }
@@ -303,7 +303,7 @@ layer {
 layer {
   name: "d2c_conv"
   type: "Convolution"
-  bottom: "d2b_scale"
+  bottom: "d2b_conv"
   top: "d2c_conv"
   param {
     lr_mult: 1.0
@@ -333,7 +333,7 @@ layer {
   name: "d2c_bn"
   type: "BatchNorm"
   bottom: "d2c_conv"
-  top: "d2c_bn"
+  top: "d2c_conv"
   batch_norm_param {
     use_global_stats: true
   }
@@ -341,8 +341,8 @@ layer {
 layer {
   name: "d2c_scale"
   type: "Scale"
-  bottom: "d2c_bn"
-  top: "d2c_scale"
+  bottom: "d2c_conv"
+  top: "d2c_conv"
   scale_param {
     axis: 1
     filler {
@@ -359,8 +359,8 @@ layer {
 layer {
   name: "d2c_relu"
   type: "ReLU"
-  bottom: "d2c_scale"
-  top: "d2c_scale"
+  bottom: "d2c_conv"
+  top: "d2c_conv"
   relu_param {
     engine: CAFFE
   }
@@ -368,7 +368,7 @@ layer {
 layer {
   name: "d3a_pool"
   type: "PoolingND"
-  bottom: "d2c_scale"
+  bottom: "d2c_conv"
   top: "d3a_pool"
   pooling_nd_param {
     pool: AVE
